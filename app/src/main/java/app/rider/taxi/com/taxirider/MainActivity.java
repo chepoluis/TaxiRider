@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import app.rider.taxi.com.taxirider.Common.Common;
 import app.rider.taxi.com.taxirider.Model.Rider;
 import dmax.dialog.SpotsDialog;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
-        users = db.getReference("Riders");
+        users = db.getReference(Common.user_rider_tbl);
         rootLayout = findViewById(R.id.rootLayout);
 
         // Init View
