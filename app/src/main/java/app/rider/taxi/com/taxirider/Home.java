@@ -106,6 +106,9 @@ public class Home extends AppCompatActivity
     // Send alert
     IFCMService mService;
 
+    //Presence system
+    DatabaseReference driversAvailable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -312,6 +315,21 @@ public class Home extends AppCompatActivity
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
 
+            // Presence system
+            driversAvailable = FirebaseDatabase.getInstance().getReference(Common.driver_tbl);
+            driversAvailable.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    // If have any change from drivers, will reload all drivers available
+                    loadAllAvailableDriver();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
             final double latitude = mLastLocation.getLatitude();
             final double longitude = mLastLocation.getLongitude();
 
@@ -334,6 +352,12 @@ public class Home extends AppCompatActivity
     }
 
     private void loadAllAvailableDriver() {
+        // Delete all markers on map (include our location marker and available drivers markers)
+        mMap.clear();
+        // After that, add our location again
+        mMap.addMarker(new MarkerOptions().position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                        .title("You"));
+
         // Load all available driver in distance 3km
         DatabaseReference driverLocation = FirebaseDatabase.getInstance().getReference(Common.driver_tbl);
         GeoFire gf = new GeoFire(driverLocation);
