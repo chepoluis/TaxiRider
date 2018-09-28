@@ -179,7 +179,9 @@ public class Home extends AppCompatActivity
                             // Make raw payload - convert LatLng to json
                             String json_lat_lng = new Gson().toJson(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
 
-                            Notification data = new Notification("Taxi",json_lat_lng); // Send it to Driver app and deserialize it again
+                            String riderToken = FirebaseInstanceId.getInstance().getToken();
+
+                            Notification data = new Notification(riderToken,json_lat_lng); // Send it to Driver app and deserialize it again
                             Sender content = new Sender(token.getToken(),data); // Send this data to token
 
                             mService.sendMessage(content)
