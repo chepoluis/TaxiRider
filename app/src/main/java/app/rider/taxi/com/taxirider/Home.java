@@ -392,7 +392,7 @@ public class Home extends AppCompatActivity
             place_location.setFilter(typeFilter);
 
             place_destination.setBoundsBias(bounds);
-            place_location.setFilter(typeFilter);
+            place_destination.setFilter(typeFilter);
 
             // Presence system
             driversAvailable = FirebaseDatabase.getInstance().getReference(Common.driver_tbl);
