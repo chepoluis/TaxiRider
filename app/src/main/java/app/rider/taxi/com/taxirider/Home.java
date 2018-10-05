@@ -3,6 +3,7 @@ package app.rider.taxi.com.taxirider;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -49,6 +50,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -174,7 +176,7 @@ public class Home extends AppCompatActivity
 
                 // Add marker at new location
                 mUserMarker = mMap.addMarker(new MarkerOptions().position(place.getLatLng())
-                                .icon(BitmapDescriptorFactory.defaultMarker())
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
                                 .title("Pickup here"));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15.0f));
             }
@@ -190,8 +192,10 @@ public class Home extends AppCompatActivity
                 mPlaceDestination = place.getAddress().toString();
 
                 // Add new destination marker
-                mMap.addMarker(new MarkerOptions().position(place.getLatLng())
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                mMap.addMarker(new MarkerOptions()
+                                .position(place.getLatLng())
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.destination_marker))
+                                .title("Destination"));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 15.0f));
 
                 // Show information in bottom
@@ -392,7 +396,7 @@ public class Home extends AppCompatActivity
             place_location.setFilter(typeFilter);
 
             place_destination.setBoundsBias(bounds);
-            place_destination.setFilter(typeFilter);
+            place_location.setFilter(typeFilter);
 
             // Presence system
             driversAvailable = FirebaseDatabase.getInstance().getReference(Common.driver_tbl);
@@ -412,14 +416,6 @@ public class Home extends AppCompatActivity
             final double latitude = mLastLocation.getLatitude();
             final double longitude = mLastLocation.getLongitude();
 
-            // Add marker
-            if (mUserMarker != null)
-                mUserMarker.remove(); // Remove old marker
-            mUserMarker = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(latitude, longitude))
-                    .title(String.format("You")));
-            // Move camera for this position
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15.0f));
 
             loadAllAvailableDriver(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
 
@@ -431,11 +427,14 @@ public class Home extends AppCompatActivity
     }
 
     private void loadAllAvailableDriver(final LatLng location) {
-        // Delete all markers on map (include our location marker and available drivers markers)
+        // Add marker
         mMap.clear();
-        // After that, add our location again
-        mMap.addMarker(new MarkerOptions().position(location)
-                        .title("You"));
+        mUserMarker = mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
+                .position(location)
+                .title(String.format("You")));
+        // Move camera for this position
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f));
 
         // Load all available driver in distance 3km
         DatabaseReference driverLocation = FirebaseDatabase.getInstance().getReference(Common.driver_tbl);
@@ -589,6 +588,21 @@ public class Home extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+        // Change the style of the map
+        try {
+            boolean isSuccess = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(this, R.raw.uber_style_map)
+            );
+
+            if(!isSuccess)
+                Log.e("Error", "Map style load failed!");
+
+        }
+        catch (Resources.NotFoundException ex)
+        {
+            ex.printStackTrace();
+        }
+
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setAllGesturesEnabled(true);
@@ -600,7 +614,7 @@ public class Home extends AppCompatActivity
                 // If isn't null, remove available marker
                 if(markerDestination != null)
                     markerDestination.remove();
-                markerDestination = mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                markerDestination = mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.destination_marker))
                 .position(latLng)
                 .title("Destination"));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15.0f));
