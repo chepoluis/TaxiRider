@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TaxiRider</string>
+    <string name="app_name">Taxi Customer</string>
     <string name="title_activity_welcome">Map</string>
     <string name="title_activity_home">Home</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
