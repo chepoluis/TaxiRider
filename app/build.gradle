@@ -34,6 +34,8 @@ dependencies {
     implementation 'com.rengwuxian.materialedittext:library:2.1.4'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'me.zhanghai.android.materialratingbar:library:1.2.0'
+
     implementation 'com.google.firebase:firebase-database:16.0.2'
     implementation 'com.google.firebase:firebase-auth:16.0.2'
     implementation 'com.google.firebase:firebase-messaging:17.3.2'
@@ -48,4 +50,3 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
 }
 apply plugin: 'com.google.gms.google-services'
-

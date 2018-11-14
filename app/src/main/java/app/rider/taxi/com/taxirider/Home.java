@@ -106,8 +106,6 @@ public class Home extends AppCompatActivity
     BottomSheetRiderFragment mBottomSheet;
     Button btnPickupRequest;
 
-    boolean isDriverFound = false;
-    String driverId = "";
     int radius = 1; // 1km
     int distance = 1; // 1km
     private static final int LIMIT = 3;
@@ -152,10 +150,10 @@ public class Home extends AppCompatActivity
         btnPickupRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isDriverFound)
+                if(!Common.isDriverFound)
                     requestPickupHere(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 else
-                    sendRequestToDriver(driverId);
+                    sendRequestToDriver(Common.driverId);
             }
         });
 
@@ -294,16 +292,16 @@ public class Home extends AppCompatActivity
         GeoFire gfDrivers = new GeoFire(drivers);
 
 
-        GeoQuery geoQuery = gfDrivers.queryAtLocation(new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()),
+        final GeoQuery geoQuery = gfDrivers.queryAtLocation(new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()),
                 radius);
         geoQuery.removeAllListeners();
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
                 // If found
-                if (!isDriverFound) {
-                    isDriverFound = true;
-                    driverId = key;
+                if (!Common.isDriverFound) {
+                    Common.isDriverFound = true;
+                    Common.driverId = key;
                     btnPickupRequest.setText("Call driver");
                     //Toast.makeText(Home.this, key, Toast.LENGTH_SHORT).show();
                 }
@@ -322,14 +320,17 @@ public class Home extends AppCompatActivity
             @Override
             public void onGeoQueryReady() {
                 // If still not found drivers, increase the radius
-                if (!isDriverFound && radius < LIMIT) {
+                if (!Common.isDriverFound && radius < LIMIT) {
                     radius++;
                     findDriver();
                 }
                 else
                 {
-                    Toast.makeText(Home.this, "No available any driver near you", Toast.LENGTH_SHORT).show();
-                    btnPickupRequest.setText("PICKUP REQUEST");
+                    if(!Common.isDriverFound) {
+                        Toast.makeText(Home.this, "No available any driver near you", Toast.LENGTH_SHORT).show();
+                        btnPickupRequest.setText("PICKUP REQUEST");
+                        geoQuery.removeAllListeners();
+                    }
                 }
             }
 

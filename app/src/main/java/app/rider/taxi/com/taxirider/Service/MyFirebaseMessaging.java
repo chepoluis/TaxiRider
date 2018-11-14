@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 
 import app.rider.taxi.com.taxirider.Model.Notification;
 import app.rider.taxi.com.taxirider.R;
+import app.rider.taxi.com.taxirider.RateActivity;
 
 public class MyFirebaseMessaging extends FirebaseMessagingService {
     @Override
@@ -35,6 +36,16 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         {
             showArrivedNotification(remoteMessage.getNotification().getBody());
         }
+        else if(remoteMessage.getNotification().getTitle().equals("DropOff"))
+        {
+            openRateActivity(remoteMessage.getNotification().getBody());
+        }
+    }
+
+    private void openRateActivity(String body) {
+        Intent intent = new Intent(this, RateActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     private void showArrivedNotification(String body) {
